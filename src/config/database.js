@@ -1,14 +1,21 @@
 require('dotenv').config();
 
+console.log('🔍 DATABASE_URL existe?', !!process.env.DATABASE_URL);
+console.log('🔍 NODE_ENV:', process.env.NODE_ENV);
+
 module.exports = {
-   
     ...(process.env.DATABASE_URL
         ? {
             url: process.env.DATABASE_URL,
             dialect: 'postgres',
+            dialectOptions: {
+                ssl: {
+                    require: true,
+                    rejectUnauthorized: false
+                }
+            }
         }
         : {
-            
             dialect: 'postgres',
             host: process.env.PG_HOST || 'localhost',
             port: process.env.PG_PORT || 5432,
@@ -17,15 +24,6 @@ module.exports = {
             database: process.env.PG_DATABASE || 'devburger',
         }),
 
-   
-    dialectOptions: {
-        ssl: process.env.NODE_ENV === 'production' ? {
-            require: true,
-            rejectUnauthorized: false
-        } : false
-    },
-
-   
     pool: {
         max: 5,
         min: 0,
@@ -33,7 +31,6 @@ module.exports = {
         idle: 10000
     },
 
-  
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
 
     define: {

@@ -15,16 +15,50 @@ class Database {
     }
 
     init() {
-        this.connection = new Sequelize(configDatabase);
+        console.log('🔍 Iniciando conexão PostgreSQL...');
         
-        // Testar conexão PostgreSQL
+        if (process.env.DATABASE_URL) {
+            console.log('🔍 Usando DATABASE_URL com SSL');
+            this.connection = new Sequelize(process.env.DATABASE_URL, {
+                dialect: 'postgres',
+                dialectOptions: {
+                    ssl: {
+                        require: true,
+                        rejectUnauthorized: false
+                    }
+                },
+                pool: {
+                    max: 5,
+                    min: 0,
+                    acquire: 30000,
+                    idle: 10000
+                },
+                logging: false,
+                define: {
+                    timestamps: true,
+                    underscored: true,
+                    underscoredAll: true,
+                }
+            });
+        } else {
+           
+            console.log('🔍 Usando configuração local');
+            this.connection = new Sequelize(configDatabase);
+        }
+        
+       
         this.connection.authenticate()
-            .then(() => console.log('✅ PostgreSQL conectado com sucesso!'))
+            .then(() => {
+                console.log('✅ PostgreSQL conectado com sucesso!');
+                return this.syncModels();
+            })
             .catch(err => {
                 console.error('❌ Erro PostgreSQL:', err.message);
+                console.error('Stack:', err.stack);
                 process.exit(1);
             });
 
+       
         models
             .map((model) => model.init(this.connection))
             .map((model) => model.associate && model.associate(this.connection.models));
@@ -32,7 +66,7 @@ class Database {
 
     async mongo() {
         try {
-            // Usar MONGO_URL do .env
+            console.log('🔍 Conectando MongoDB...');
             this.mongoConnection = await mongoose.connect(
                 process.env.MONGO_URL || 'mongodb://localhost:27017/devburger'
             );
@@ -43,7 +77,6 @@ class Database {
         }
     }
 
-    // Método para sincronizar models
     async syncModels() {
         try {
             if (process.env.NODE_ENV === 'development') {
