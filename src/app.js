@@ -9,15 +9,22 @@ class App {
     constructor() {
         this.app = express();
         
-        this.app.use(cors());
         this.middlewares();
         this.routes();
     }
 
     middlewares() {
+       
+        const corsOptions = {
+            origin: process.env.CORS_ORIGIN || '*',
+            credentials: true,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+            allowedHeaders: ['Content-Type', 'Authorization']
+        };
+        
+        this.app.use(cors(corsOptions));
         this.app.use(express.json());
         this.app.use('/product-file', express.static(resolve(__dirname, '..', 'uploads')));
-
         this.app.use('/category-file', express.static(resolve(__dirname, '..', 'uploads')));
     }
 
@@ -25,6 +32,5 @@ class App {
         this.app.use(routes);
     }
 }
-
 
 export default new App().app;
