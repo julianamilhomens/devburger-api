@@ -4,7 +4,8 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon",
-    "start": "node -r sucrase/register src/server.js"
+    "start": "node -r sucrase/register src/server.js",
+    "seed": "node -r sucrase/register src/database/seeders/seed.js"
   },
   "engines": {
     "node": "20.x",
