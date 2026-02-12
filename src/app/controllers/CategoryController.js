@@ -20,7 +20,7 @@ class CategoryController {
             return response.status(401).json();
         }
 
-        const { filename: path } = request.file;
+        const path = request.file.path;
         const { name } = request.body;
 
         const categoryExists = await Category.findOne({
@@ -74,7 +74,7 @@ class CategoryController {
 
         let path;
         if (request.file) {
-            path = request.file.filename;
+            path = request.file.path;
         }
 
         const { name } = request.body;
