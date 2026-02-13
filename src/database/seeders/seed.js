@@ -1,23 +1,38 @@
 import Category from '../../app/models/Category.js';
 import User from '../../app/models/User.js';
-
-import '../../database/index.js'; 
+import '../../database/index.js';
 
 async function seed() {
   try {
     console.log('🌱 Iniciando seed...');
 
-    await Category.bulkCreate(
-      [
-        { name: 'Entradas' },
-        { name: 'Hambúrgueres' },
-        { name: 'Bebidas' },
-        { name: 'Sobremesas' }
-      ],
-      { ignoreDuplicates: true }
-    );
+    const categories = [
+      {
+        name: 'Entradas',
+        path: 'https://res.cloudinary.com/dv3ovr0pg/image/upload/v1770946748/ef17891f-822f-4afa-ab65-caa03b5c9e70_ckywr7.png'
+      },
+      {
+        name: 'Hambúrgueres',
+        path: 'https://res.cloudinary.com/dv3ovr0pg/image/upload/v1770946620/1b8a6a5a-b486-42bb-87d7-71c53070fdf7_xvhsnb.png'
+      },
+      {
+        name: 'Bebidas',
+        path: 'https://res.cloudinary.com/dv3ovr0pg/image/upload/v1770946811/39370a92-a857-4b66-bc77-ae4b4146d33e_z4kzdg.png'
+      },
+      {
+        name: 'Sobremesas',
+        path: 'https://res.cloudinary.com/dv3ovr0pg/image/upload/v1770946951/3c55737a-8ac0-4501-8f83-12f0b10eabc2_rtbjzb.png'
+      }
+    ];
 
-    console.log('✅ Categorias criadas/verificadas');
+    for (const category of categories) {
+      await Category.findOrCreate({
+        where: { name: category.name },
+        defaults: category
+      });
+    }
+
+    console.log('✅ Categorias criadas com imagem');
 
     await User.findOrCreate({
       where: { email: 'admin@email.com' },
@@ -29,8 +44,6 @@ async function seed() {
       }
     });
 
-    console.log('✅ Admin verificado/criado');
-
     await User.findOrCreate({
       where: { email: 'user@email.com' },
       defaults: {
@@ -41,10 +54,11 @@ async function seed() {
       }
     });
 
-    console.log('✅ User verificado/criado');
+    console.log('✅ Usuários criados/verificados');
 
     console.log('🌱 Seed finalizado com sucesso!');
     process.exit();
+
   } catch (error) {
     console.error('❌ Erro no seed:', error);
     process.exit(1);

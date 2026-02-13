@@ -13,7 +13,7 @@ class Product extends Model {
         url: {
           type: Sequelize.VIRTUAL,
           get() {
-            return this.path;
+            return this.path; 
           },
         },
       },
