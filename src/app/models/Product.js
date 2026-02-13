@@ -7,13 +7,14 @@ class Product extends Model {
         name: Sequelize.STRING,
         price: {
           type: Sequelize.DECIMAL(10, 2),
+          allowNull: false
         },
         path: Sequelize.STRING,
         offer: Sequelize.BOOLEAN,
         url: {
           type: Sequelize.VIRTUAL,
           get() {
-            return this.path; 
+            return this.path;
           },
         },
       },
